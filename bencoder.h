@@ -17,7 +17,7 @@ string bencodehelper(string &a){
     return to_string(a.size()) + ':' + a;
 }
 
-string bencode(string &a){
+string bencode(string &s){
     string digit = "", strs = "";
     string ans;
     for(int i=0; i<a.size(); i++){
@@ -51,7 +51,7 @@ string bencode(vector<any> &list){
         result.append(bencode(list[i]));
     }
     result.push_back('e');
-    return res;
+    return result;
 }
 
 #endif
