@@ -1,7 +1,10 @@
 #ifndef __BENCODER_H_INCLUDED__
 #define __BENCODER_H_INCLUDED__
 
-#include<bits/stdc++.h>
+#include <vector>
+#include <any>
+#include <string>
+using namespace std;
 
 string bencode(int &a){
     string val = to_string(a);
@@ -41,6 +44,14 @@ string bencode(string &a){
     return ans;
 }
 
-
+string bencode(vector<any> &list){
+    int n = list.size();
+    string result = "l";
+    for(int i=0; i<n; i++){
+        result.append(bencode(list[i]));
+    }
+    result.push_back('e');
+    return res;
+}
 
 #endif
