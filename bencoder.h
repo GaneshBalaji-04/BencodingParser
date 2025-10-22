@@ -1,8 +1,8 @@
-#ifndef __BENCODER_H_INCLUDED__
-#define __BENCODER_H_INCLUDED__
+#ifndef BENCODER_H
+#define BENCODER_H
 
 #include <vector>
-#include <any>
+#include <variant>
 #include <string>
 #include <map>
 #include <typeinfo>
@@ -11,9 +11,13 @@ using namespace std;
 
 string bencode(int &a){
     string val = to_string(a);
-    string res = 'i' + val + 'e';
 
-    return res;
+    string result;
+    result.push_back('i');
+    result.append(val);
+    result.push_back('e');
+
+    return result;
 }
 
 string bencodehelper(string &a){
@@ -23,7 +27,7 @@ string bencodehelper(string &a){
 string bencode(string &s){
     string digit = "", strs = "";
     string ans;
-    for(int i=0; i<a.size(); i++){
+    for(int i=0; i<s.size(); i++){
         if(isdigit(s[i]) and strs == ""){
             digit+=s[i];
         }
@@ -47,37 +51,43 @@ string bencode(string &s){
     return ans;
 }
 
-string bencode(vector<any> &list){
+string bencode(vector<variant<int, string>> &list){
+    if(list.size() == 0){
+        return "le";
+    }
     int n = list.size();
-    string result = "l";
+    string result;
+    result.push_back('l');
     for(int i=0; i<n; i++){
-        if(typeid(list[i]) == typeid(int)){
-            int value = any_cast<int>(list[i]);
+        if(holds_alternative<int>(list[i])){
+            int value = get<int>(list[i]);
             result.append(bencode(value));
         }
-        else if(typeid(list[i]) == typeid(string)){
-            string str = any_cast<string>(list[i]);
-            result.append(bencode(str));
+        else if(holds_alternative<string>(list[i])){
+            string value = get<string>(list[i]);
+            result.append(bencode(value));
         }
     }
     result.push_back('e');
     return result;
 }
 
-string bencode(map<string, any> &mp){
+string bencode(map<string, variant<int, string>> &mp){
     if(mp.empty()){
         return "de";
     }
     string result;
     result.push_back('d');
     for(auto &p:mp){
-        if(typeid(p.second) == typeid(int)){
-            int value = any_cast<int>(p.second);
+        string s = p.first;
+        result.append(bencode(s));
+        if(holds_alternative<int>(p.second)){
+            int value = get<int>(p.second);
             result.append(bencode(value));
         }
-        else if(typeid(p.second) == typeid(string)){
-            string str = any_cast<string>(p.second);
-            result.append(bencode(str));
+        else if(holds_alternative<string>(p.second)){
+            string value = get<string>(p.second);
+            result.append(bencode(value));
         }
     }
     result.push_back('e');
