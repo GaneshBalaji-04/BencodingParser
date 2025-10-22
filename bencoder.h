@@ -21,7 +21,11 @@ string bencode(int &a){
 }
 
 string bencodehelper(string &a){
-    return to_string(a.size()) + ':' + a;
+    string result;
+    result.append(to_string(a.size()));
+    result.push_back(':');
+    result.append(a);
+    return result;
 }
 
 string bencode(string &s){
@@ -48,7 +52,7 @@ string bencode(string &s){
             strs+=s[i];
         }
     }
-    return ans;
+    return bencodehelper(ans);
 }
 
 string bencode(vector<variant<int, string>> &list){
